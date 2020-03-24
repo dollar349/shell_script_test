@@ -1,0 +1,19 @@
+#!/bin/sh
+Tap_table="
+dollar:tap0
+sonata:tap1
+"
+
+if [[ $IFACE == br0 ]]; then
+  BR0_STATUS=`ethtool br0 | grep "Link detected: yes" | wc -l`
+  if [[ $BR0_STATUS == 1 ]]; then
+    for i in ${Tap_table}
+    do
+      name=`echo ${i} | awk -F':' '{print $1}'`
+      tap=`echo ${i} | awk -F':' '{print $2}'`
+      tunctl -t ${tap} -u ${name} -g  ${name}
+      brctl addif br0  ${tap}
+      ifconfig ${tap} up
+    done
+  fi
+fi
