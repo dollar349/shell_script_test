@@ -1,0 +1,20 @@
+#!/bin/bash
+
+OPTFILE="dockerfile"
+
+
+
+PPP=dollar
+
+cat << EOF > $OPTFILE
+### Dockerfile
+# Use an official Python runtime as a parent image
+FROM python:3.7.3-stretch
+
+# Set the working directory to /app
+WORKDIR \${PPP}
+
+# Install any needed packages specified in requirements.txt
+COPY requirements.txt ./
+COPY gunicorn.py ./
+EOF
