@@ -1,0 +1,198 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+// Copyright 2019 IBM Corp.
+
+/dts-v1/;
+
+#include "aspeed-g6.dtsi"
+#include <dt-bindings/gpio/aspeed-gpio.h>
+#include "devicetree-config.dtsi"
+
+/ {
+	model = "AST2600 EVB";
+	compatible = "aspeed,ast2600";
+
+	aliases {
+		serial4 = &uart5;
+	};
+
+	chosen {
+		bootargs = "console=ttyS4,115200n8";
+	};
+
+	memory@80000000 {
+		device_type = "memory";
+		reg = <0x80000000 0x80000000>;
+	};
+
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		gfx_memory: framebuffer {
+			size = <0x01000000>;
+			alignment = <0x01000000>;
+			compatible = "shared-dma-pool";
+			reusable;
+		};
+
+		flash_memory: region@9e4f0000 {
+			no-map;
+			reg = <0x9e4f0000 0x00010000>; /* 64K */
+		};
+
+		video_engine_memory: video {
+			no-map;
+			reg = <0x9d1f0000 0x01300000>; /* 19MB */
+		};
+	};
+};
+
+&mdio2 {
+	status = "okay";
+
+	ethphy2: ethernet-phy@0 {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		reg = <0>;
+	};
+};
+
+&mdio3 {
+	status = "okay";
+
+	ethphy3: ethernet-phy@0 {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		reg = <0>;
+	};
+};
+
+&mac2 {
+	status = "okay";
+
+	phy-mode = "rgmii";
+	phy-handle = <&ethphy2>;
+
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_rgmii3_default>;
+};
+
+&mac3 {
+	status = "okay";
+
+	phy-mode = "rgmii";
+	phy-handle = <&ethphy3>;
+
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_rgmii4_default>;
+};
+
+&emmc_controller {
+	status = "okay";
+};
+
+&emmc {
+	non-removable;
+	bus-width = <4>;
+	max-frequency = <52000000>;
+};
+
+&rtc {
+	status = "okay";
+};
+
+&fmc {
+	status = "okay";
+	flash@0 {
+		status = "okay";
+		m25p,fast-read;
+		label = "bmc";
+		spi-max-frequency = <50000000>;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			u-boot@0 {
+				reg = <0x0 0x100000>; // 1MB
+				label = "u-boot";
+			};
+
+			u-boot-env@100000 {
+				reg = <0x100000 0x20000>; // 128KB
+				label = "u-boot-env";
+			};
+
+			kernel@200000 {
+				reg = <0x200000 0x800000>;
+				label = "kernel";
+			};
+
+			rofs@a00000 {
+				reg = <0xa00000 0x2e00000>;
+				label = "rofs";
+			};
+
+			rwfs@3800000 {
+				reg = <0x3800000 0x800000>;
+				label = "rwfs";
+			};
+		};
+	};
+};
+
+&spi1 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_spi1_default>;
+
+	flash@0 {
+		status = "okay";
+		m25p,fast-read;
+		label = "pnor";
+		spi-max-frequency = <100000000>;
+	};
+};
+
+&uart5 {
+	status = "okay";
+};
+
+&fsim0 {
+	status = "okay";
+};
+
+&kcs1 {
+        kcs_addr = <0xCA8>;
+        status = "okay";
+};
+
+&pinctrl {
+        pinctrl-names = "default";
+        pinctrl-0 = <&pinctrl_lpc_default>;
+};
+
+&lpc_ctrl {
+	status = "okay";
+	memory-region = <&flash_memory>;
+	flash = <&spi1>;
+};
+
+&sio_regs {
+	serial_mux {
+		offset = <0x1c>;
+		bit-mask = <0xffffffff>;
+		bit-shift = <0>;
+	};
+};
+
+&video {
+	compatible = "aspeed,ast2600-video";
+	status = "okay";
+	memory-region = <&video_engine_memory>;
+};
+
+&vhub {
+	compatible = "aspeed,ast2600-usb-vhub";
+	status = "okay";
+};
