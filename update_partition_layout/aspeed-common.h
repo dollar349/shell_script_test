@@ -62,8 +62,8 @@
        "kernel_start=0x200000\0" \
        "kernel_size=0x800000\0" \
        "rootfs_start=0xa00000\0" \
-       "rootfs_size=0x2600000\0" \
-       "rwfs_start=0x3000000\0" \
+       "rootfs_size=0x2e00000\0" \
+       "rwfs_start=0x3800000\0" \
        "rwfs_size=0x800000\0" \
        "erase_env=sf probe 0;sf erase ${env_start} +${env_size}\0" \
        "erase_ps=sf probe 0;sf erase ${rwfs_start} +${rwfs_size}\0" \
