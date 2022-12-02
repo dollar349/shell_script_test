@@ -1,0 +1,5 @@
+%23%23 Image loaction
+* http://10.162.243.217/inc/dailybuild/inc-ipsl/
+```
+$ setenv serverip 10.162.243.220;setenv rootpath dollar/;saveenv;dhcp
+``` 
