@@ -1,9 +1,8 @@
-
 copy_image_file()
 {
     local image_dir=$1
     local output_dir=$2
-    local CALLER_NAME=$(basename $0)
+    local CALLER_NAME=$(basename ${BASH_SOURCE[1]})
 
     if [ ! -d ${image_dir} ]; then
         echo "Image not found!"
